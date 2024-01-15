@@ -18,6 +18,7 @@ const SearchBox = styled.form`
     font-weight: bold;
   }
   & button {
+    margin: 5px;
     background-color: black;
     font-size: 14px;
     padding: 0 10px;
@@ -52,6 +53,7 @@ const CityComponent = (props) => {
           placeholder="City"
         />
         <button type={"submit"}>Search</button>
+        <button type={"submit"}>Your Last Search</button>
       </SearchBox>
     </>
   );

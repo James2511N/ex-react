@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import styled from "styled-components";
 import Axios from "axios";
 import CityComponent from "./modules/CityComponent";
 import WeatherComponent from "./modules/WeatherInfoComponent";
+
+const LOCAL_STORAGE_KEY = "lastCity";
 
 export const WeatherIcons = {
   "01d": "/react-weather-app/icons/sunny.svg",
@@ -48,16 +50,42 @@ const CloseButton = styled.span`
   position: absolute;
 `;
 
+
 function App() {
-  const [city, updateCity] = useState();
+  const [city, updateCity] = useState("");
   const [weather, updateWeather] = useState();
+
+  useEffect(() => {
+    const lastCity = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (lastCity) {
+      updateCity(lastCity);
+    }
+  }, []);
+
   const fetchWeather = async (e) => {
     e.preventDefault();
-    const response = await Axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=fe4feefa8543e06d4f3c66d92c61b69c`,
-    );
-    updateWeather(response.data);
+    
+    try {
+      const response = await Axios.get(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=fe4feefa8543e06d4f3c66d92c61b69c`,
+      );
+      updateWeather(response.data);
+
+     
+      localStorage.setItem(LOCAL_STORAGE_KEY, city);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        alert("City not found. Please enter a valid city name.");
+      } else {
+        alert("An error occurred while fetching weather data. Please try again later.");
+      }
+    }
+    if (!city) {
+      alert("Please enter a city name before searching.");
+      return;
+    }
   };
+
   return (
     <Container>
       <AppLabel>React Weather App</AppLabel>
